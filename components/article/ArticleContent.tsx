@@ -103,7 +103,7 @@ function renderHtmlWithHeadings(json: JSONContent, exts: Extensions) {
   );
   const serializer = DOMSerializer.fromSchema(schema);
   const fragment = serializer.serializeFragment(doc.content, {
-    document: ssrDocument,
+    document: ssrDocument as unknown as Document,
   });
   const container = ssrDocument.createElement("div");
   container.appendChild(fragment);
