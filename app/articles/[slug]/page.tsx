@@ -109,16 +109,16 @@ export default async function ArticlePage({
     )
     .eq("slug", slug)
     .eq("status", "published")
-    .maybeSingle();
+    .maybeSingle<ArticleData>(); // 型パラメータは任意
 
-  if (error || !data) {
+  if (error || !data || typeof data === "string") {
     if (error) {
       console.error("Failed to load article:", error);
     }
     return notFound();
   }
 
-  const post = data as ArticleData;
+  const post: ArticleData = data;
   const title = decodeEscapedText(post.title);
   const description = decodeEscapedText(post.description ?? "");
 
