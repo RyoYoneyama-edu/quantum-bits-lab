@@ -30,7 +30,7 @@ export default function AdminPostsPage() {
       let query = supabase
         .from("posts")
         .select("id, title, slug, category, status, updated_at, published_at")
-        .order("updated_at", { ascending: false, nullsLast: true });
+        .order("updated_at", { ascending: false });
 
       if (statusFilter !== "all") {
         query = query.eq("status", statusFilter);
