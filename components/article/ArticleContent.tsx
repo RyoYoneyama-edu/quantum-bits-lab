@@ -105,7 +105,7 @@ function renderHtmlWithHeadings(json: JSONContent, exts: Extensions) {
   const fragment = serializer.serializeFragment(doc.content, {
     document: ssrDocument as unknown as Document,
   });
-  const container = ssrDocument.createElement("div");
+  const container = (ssrDocument as unknown as Document).createElement("div");
   container.appendChild(fragment);
 
   // 数式ノードを KaTeX でサーバーサイドレンダリング
