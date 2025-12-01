@@ -29,7 +29,6 @@ const extensions: Extensions = [
     },
   }),
   Mathematics.configure({
-    inline: true,
     HTMLAttributes: { class: "math-inline" },
     blockHTMLAttributes: { class: "math-block" },
     katex,

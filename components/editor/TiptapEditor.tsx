@@ -57,7 +57,6 @@ export default function TiptapEditor({
         },
       }),
       Mathematics.configure({
-        inline: true,
         HTMLAttributes: { class: "math-inline" },
         blockHTMLAttributes: { class: "math-block" },
         katex,
