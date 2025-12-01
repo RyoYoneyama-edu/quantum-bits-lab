@@ -157,9 +157,10 @@ export default async function ArticlePage({
 
   // 本文 HTML + 目次用 h2 抽出
   const { html, headings } = renderContentWithHeadings(post.content);
-  const { html: leadHtml } = leadContent
+  const leadResult = leadContent
     ? renderContentWithHeadings(leadContent)
-    : { html: "", headings: [] };
+    : { html: "", headings: [] as ReturnType<typeof renderContentWithHeadings>["headings"] };
+  const leadHtml = leadResult.html;
 
   return (
     <>
