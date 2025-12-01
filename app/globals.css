@@ -1,26 +1,403 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --brand-bg: #f1f5f9;
+  --brand-surface: #ffffff;
+  --brand-primary: #0f766e;
+  --brand-primary-light: #14b8a6;
+  --brand-accent: #6366f1;
+  --brand-heading: #0f172a;
+  --brand-text: #334155;
+  --brand-border: rgba(15, 118, 110, 0.12);
+  --grid-dot: rgba(99, 102, 241, 0.45);
+  --grid-dot-alt: rgba(20, 184, 166, 0.35);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  min-height: 100vh;
+  position: relative;
+  background-color: var(--brand-bg);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.96),
+    rgba(249, 250, 251, 0.78)
+  );
+  color: var(--brand-text);
+  font-family: "Noto Sans JP", "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+    "Segoe UI", sans-serif;
+  font-feature-settings: "palt";
+}
+
+.dot-grid {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, var(--grid-dot) 1.2px, transparent 1.6px),
+    radial-gradient(circle, var(--grid-dot-alt) 1.2px, transparent 1.6px);
+  background-size: 70px 70px, 90px 90px;
+  background-position: 0 0, 35px 35px;
+  opacity: 0.65;
+  z-index: 0;
+}
+
+.hero-shell {
+  position: relative;
+  overflow: hidden;
+}
+
+.interactive-spotlight {
+  pointer-events: none;
+  position: absolute;
+  inset: -120px;
+  opacity: 0;
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    rgba(99, 102, 241, 0.25),
+    transparent 40%
+  );
+  transition: opacity 0.4s ease;
+}
+
+.hero-shell:hover .interactive-spotlight {
+  opacity: 1;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.88);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 10px -2px rgba(15, 23, 42, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.2);
+  transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.glass-card:hover {
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 20px 40px -10px rgba(15, 118, 110, 0.18);
+  border-color: rgba(15, 118, 110, 0.35);
+}
+
+.bento-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-auto-rows: minmax(180px, auto);
+  }
+}
+
+.col-span-2 {
+  grid-column: span 2;
+}
+
+.row-span-2 {
+  grid-row: span 2;
+}
+
+.text-gradient {
+  background: linear-gradient(135deg, #0f766e 0%, #6366f1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.img-mask {
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 1) 65%, transparent 100%);
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 65%,
+    transparent 100%
+  );
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #0f766e;
+}
+
+@keyframes marquee {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+/* コードブロックのスタイル（ダークテーマ風） */
+.prose pre {
+  background: #1f2937;
+  color: #7dd3fc;
+  border-radius: 12px;
+  padding: 14px 16px;
+  border: 1px solid #111827;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
+}
+.prose pre code {
+  background: transparent;
+  color: inherit;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+  font-size: 0.92rem;
+}
+.prose code {
+  display: inline-block;
+  background: #1f2937;
+  color: #7dd3fc;
+  padding: 0.1rem 0.2rem;
+  border-radius: 6px;
+  font-size: 0.92em;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+}
+
+/* 数式ブロック/インラインの余白 */
+.math-block {
+  margin: 1rem 0;
+  text-align: center;
+}
+.math-inline {
+  padding: 0 0.1rem;
+}
+.tiptap-mathematics-render[data-type="block-math"] {
+  display: block;
+  margin: 1rem 0;
+  text-align: center;
+}
+.tiptap-mathematics-render[data-type="inline-math"] {
+  display: inline-block;
+  padding: 0 0.1rem;
+}
+
+/* テーブル */
+.prose table {
+  width: 100% !important;
+  border-collapse: collapse !important;
+  margin: 0.75rem 0 !important;
+  font-size: 1rem !important;
+}
+.prose table th,
+.prose table td {
+  border: 1px solid #cfe6dc !important;
+  padding: 0.34rem 0.54rem !important;
+  line-height: 1.3 !important;
+  vertical-align: top !important;
+}
+.prose table th {
+  background: #eaf6f1 !important;
+  color: #0f2a45 !important;
+  font-weight: 750 !important;
+}
+.prose table tbody tr:nth-child(odd) {
+  background: #f5fbf8 !important;
+}
+.prose table td p,
+.prose table th p {
+  margin: 0 !important;
+}
+
+/* ハイライト（インライン） */
+.prose mark,
+.prose .highlight {
+  background: #fff3bf;
+  padding: 0.1rem 0.25rem;
+  border-radius: 4px;
+}
+
+/* 数式ブロック/インラインの余白 */
+.math-block {
+  margin: 1rem 0;
+  text-align: center;
+}
+.math-inline {
+  padding: 0 0.1rem;
+}
+
+/* 番号付きリストを「1. 2.」の書式で強調（グリーン、太字） */
+/* 番号付きリスト（間隔詰め＋薄いグリーン背景＋緑の数字） */
+.prose :where(ol):not(:where(.not-prose *)),
+.prose ol {
+  list-style: none !important;
+  counter-reset: item !important;
+  padding: 8px 12px !important;
+  margin: 0 0 0.5rem 0 !important;
+  background: #f2f8f5;
+  border-radius: 10px;
+}
+.prose :where(ol):not(:where(.not-prose *)) > li,
+.prose ol > li {
+  counter-increment: item !important;
+  position: relative !important;
+  padding-left: 1.4rem !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.1rem !important;
+  line-height: 1.4 !important;
+}
+.prose :where(ol):not(:where(.not-prose *)) > li > *:first-child,
+.prose ol > li > *:first-child {
+  margin-top: 0 !important;
+}
+.prose :where(ol):not(:where(.not-prose *)) > li > *:last-child,
+.prose ol > li > *:last-child {
+  margin-bottom: 0 !important;
+}
+.prose :where(ol):not(:where(.not-prose *)) > li > p,
+.prose ol > li > p {
+  margin: 0 !important;
+  line-height: 1.5 !important;
+}
+.prose :where(ol):not(:where(.not-prose *)) > li::before,
+.prose ol > li::before {
+  content: counter(item) "." !important;
+  position: absolute !important;
+  left: 0 !important;
+  top: 0.05rem !important;
+  font-weight: 800 !important;
+  color: #0f766e !important;
+  font-size: 0.95rem !important;
+}
+
+/* 見出しデザイン（緑基調） */
+.prose :where(h2):not(:where(.not-prose *)),
+.prose h2 {
+  position: relative;
+  margin-top: 1.9em;
+  margin-bottom: 0.85em;
+  color: #0f172a;
+  font-weight: 800 !important;
+  font-size: 1.5rem !important;
+}
+.prose :where(h2):not(:where(.not-prose *))::after,
+.prose h2::after {
+  content: "";
+  display: block;
+  margin-top: 0.35em;
+  width: 80px;
+  height: 6px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #6366f1, #14b8a6);
+  position: relative;
+}
+.prose :where(h2):not(:where(.not-prose *))::before,
+.prose h2::before {
+  content: none;
+}
+.prose :where(h3):not(:where(.not-prose *)),
+.prose h3 {
+  margin-top: 1.5em;
+  margin-bottom: 0.65em;
+  padding-left: 0;
+  color: #0f766e;
+  font-weight: 750 !important;
+  font-size: 1.4rem !important;
+}
+.prose :where(h3):not(:where(.not-prose *))::before,
+.prose h3::before {
+  content: none;
+}
+.prose :where(h4):not(:where(.not-prose *)),
+.prose h4 {
+  margin-top: 1.2em !important;
+  margin-bottom: 0.4em !important;
+  padding-left: 0.5em !important;
+  color: #0f2a45 !important;
+  font-weight: 700 !important;
+  font-size: 1.08rem !important;
+  line-height: 1.5 !important;
+  border-left: 3px solid rgba(15, 118, 110, 0.45) !important;
+  background: none !important;
+}
+.prose :where(h4):not(:where(.not-prose *))::before,
+.prose :where(h4):not(:where(.not-prose *))::after,
+.prose h4::before,
+.prose h4::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* 通常のリスト（・）をコンパクト＆緑マーカーで表示 */
+.prose :where(ul):not(:where(.not-prose *)),
+.prose ul {
+  list-style: none !important;
+  padding: 8px 12px !important;
+  margin: 0 0 0.5rem 0 !important;
+  background: #f7faf8;
+  border-radius: 10px;
+}
+.prose :where(ul):not(:where(.not-prose *)) > li,
+.prose ul > li {
+  position: relative !important;
+  padding-left: 1.2rem !important;
+  margin-top: 0 !important;
+  margin-bottom: 0.1rem !important;
+  line-height: 1.4 !important;
+}
+.prose :where(ul):not(:where(.not-prose *)) > li::before,
+.prose ul > li::before {
+  content: "・";
+  position: absolute !important;
+  left: 0 !important;
+  top: 0.05rem !important;
+  color: #0f766e !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+}
+.prose :where(ul):not(:where(.not-prose *)) > li > *:first-child,
+.prose ul > li > *:first-child {
+  margin-top: 0 !important;
+}
+.prose :where(ul):not(:where(.not-prose *)) > li > *:last-child,
+.prose ul > li > *:last-child {
+  margin-bottom: 0 !important;
+}
+.prose :where(ul):not(:where(.not-prose *)) > li > p,
+.prose ul > li > p {
+  margin: 0 !important;
+  line-height: 1.5 !important;
 }

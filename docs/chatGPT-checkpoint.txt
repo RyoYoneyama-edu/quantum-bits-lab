@@ -1,0 +1,100 @@
+何が起きているか
+
+renderHtmlWithHeadings の中で、
+
+const inlineNodes = container.querySelectorAll(
+  "[data-type='math-inline'], math-inline, span.math-inline"
+)
+
+const blockNodes = container.querySelectorAll(
+  "[data-type='math-block'], math-block, div.math-block"
+)
+
+
+と書いていますよね。
+
+でも、最新版の @tiptap/extension-mathematics が吐く DOM は、ドキュメントを見ると inline-math / block-math になっています。
+
+つまり、
+
+実際の DOM: data-type="inline-math" / data-type="block-math"
+
+探している DOM: data-type="math-inline" / data-type="math-block"
+
+なので、
+
+const inlineNodes = ...
+const blockNodes = ...
+
+
+ここで 常に NodeList が空 → katex.renderToString が一度も呼ばれていない
+→ LaTeX 文字列のまま出てしまう → 「記事ページだと数式がレンダリングされてないように見える」
+
+編集画面は Tiptap + Mathematics の NodeView が直接 KaTeX を呼んでくれるので問題無し、という状態です。
+
+修正案：セレクタを正しい data-type に直す
+
+renderHtmlWithHeadings の KaTeX 部分だけ、こんな感じに修正すれば OK です。
+
+  // 数式ノードを KaTeX でサーバーサイドレンダリング
+  const inlineNodes = container.querySelectorAll(
+    // 新しい extension の DOM
+    "[data-type='inline-math'], .tiptap-mathematics-render[data-type='inline-math']," +
+      // 互換用（もし古い DOM が混ざっていても拾えるようにしておく）
+      "[data-type='math-inline'], math-inline, span.math-inline"
+  )
+
+  inlineNodes.forEach((el) => {
+    const latex =
+      (el as HTMLElement).dataset.latex ||
+      (el as HTMLElement).getAttribute("data-latex") ||
+      (el as HTMLElement).textContent ||
+      ""
+    ;(el as HTMLElement).innerHTML = katex.renderToString(latex, {
+      throwOnError: false,
+      displayMode: false,
+    })
+  })
+
+  const blockNodes = container.querySelectorAll(
+    "[data-type='block-math'], .tiptap-mathematics-render[data-type='block-math']," +
+      "[data-type='math-block'], math-block, div.math-block"
+  )
+
+  blockNodes.forEach((el) => {
+    const latex =
+      (el as HTMLElement).dataset.latex ||
+      (el as HTMLElement).getAttribute("data-latex") ||
+      (el as HTMLElement).textContent ||
+      ""
+    ;(el as HTMLElement).innerHTML = katex.renderToString(latex, {
+      throwOnError: false,
+      displayMode: true,
+    })
+  })
+
+
+最低限、
+
+"[data-type='math-inline']" → "[data-type='inline-math']"
+"[data-type='math-block']"  → "[data-type='block-math']"
+
+
+に変えるだけでも動くはずです。
+
+もう一個チェックしてほしいポイント（CSS）
+
+KaTeX の CSS を記事ページでも読み込んでいるか も確認してください。
+
+Next.js なら app/layout.tsx や pages/_app.tsx などで：
+
+import "katex/dist/katex.min.css"
+
+
+をグローバルにインポートしておかないと、
+
+HTML は KaTeX になっている
+
+でもスタイルが当たらず、ただの素の文字列っぽく見える
+
+という状態になりがちです。
