@@ -28,9 +28,7 @@ const extensions: Extensions = [
       class: "my-6 overflow-hidden rounded-xl border bg-slate-50",
     },
   }),
-  Mathematics.configure({
-    katex,
-  }),
+  Mathematics,
   Table.configure({
     resizable: false,
     lastColumnResizable: false,

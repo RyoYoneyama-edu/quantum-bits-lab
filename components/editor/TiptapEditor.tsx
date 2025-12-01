@@ -56,9 +56,7 @@ export default function TiptapEditor({
           class: "text-sky-700 underline hover:text-sky-900",
         },
       }),
-      Mathematics.configure({
-        katex,
-      }),
+      Mathematics,
       Table.configure({
         resizable: false,
         lastColumnResizable: false,
