@@ -150,7 +150,7 @@ function BentoGrid({
       )}
 
       <article className="glass-card col-span-2 row-span-2 p-6">
-        <h3 className="text-sm font-bold text-slate-500">最新の論文解説</h3>
+        <h3 className="text-sm font-bold text-slate-500">最新記事</h3>
         <div className="mt-4 space-y-4">
           {insightPosts.map((post) => (
             <Link
