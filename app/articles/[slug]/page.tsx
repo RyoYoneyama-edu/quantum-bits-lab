@@ -45,7 +45,7 @@ function decodeEscapedText(value?: string | null) {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<ArticleParams> | ArticleParams;
+  params: Promise<ArticleParams>;
 }): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = decodeURIComponent(resolvedParams.slug);
@@ -80,7 +80,7 @@ export async function generateMetadata({
 export default async function ArticlePage({
   params,
 }: {
-  params: Promise<ArticleParams> | ArticleParams;
+  params: Promise<ArticleParams>;
 }) {
   const resolvedParams = await params;
   const slug = decodeURIComponent(resolvedParams.slug);

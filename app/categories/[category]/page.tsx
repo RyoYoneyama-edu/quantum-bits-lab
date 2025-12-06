@@ -30,7 +30,7 @@ type CategoryParams = {
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<CategoryParams> | CategoryParams;
+  params: Promise<CategoryParams>;
 }): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = decodeURIComponent(resolvedParams.category);
@@ -70,7 +70,7 @@ function decodeEscapedText(value?: string | null) {
 export default async function CategoryPage({
   params,
 }: {
-  params: Promise<CategoryParams> | CategoryParams;
+  params: Promise<CategoryParams>;
 }) {
   const resolvedParams = await params;
   const slug = decodeURIComponent(resolvedParams.category);
