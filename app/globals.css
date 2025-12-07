@@ -80,6 +80,11 @@ body {
     box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
+.prose .text-size-s {
+  font-size: 0.9em;
+  line-height: 1.6;
+}
+
 .glass-card:hover {
   transform: translateY(-4px) scale(1.01);
   box-shadow: 0 20px 40px -10px rgba(15, 118, 110, 0.18);

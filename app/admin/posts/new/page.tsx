@@ -25,6 +25,7 @@ type AuthorOption = {
 
 const BUCKET = "article-images";
 const ROOT_PREFIX = "media";
+const PAGE_SIZE = 6;
 
 export default function NewPostPage() {
   const router = useRouter();
@@ -53,7 +54,16 @@ export default function NewPostPage() {
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaItems, setMediaItems] = useState<MediaItem[]>([]);
   const [mediaError, setMediaError] = useState<string | null>(null);
+  const [mediaPage, setMediaPage] = useState(1);
   const mediaLoaded = useMemo(() => mediaItems.length > 0, [mediaItems]);
+  const mediaTotalPages = useMemo(
+    () => Math.max(1, Math.ceil(mediaItems.length / PAGE_SIZE)),
+    [mediaItems.length]
+  );
+  const mediaPageItems = useMemo(() => {
+    const start = (mediaPage - 1) * PAGE_SIZE;
+    return mediaItems.slice(start, start + PAGE_SIZE);
+  }, [mediaItems, mediaPage]);
 
   useEffect(() => {
     async function fetchCategories() {
@@ -111,6 +121,7 @@ export default function NewPostPage() {
     try {
       const rows = await walkStorageFolders(BUCKET, ROOT_PREFIX);
       setMediaItems(rows);
+      setMediaPage(1);
     } catch (error) {
       setMediaError(describeError(error));
     } finally {
@@ -325,21 +336,52 @@ export default function NewPostPage() {
                 {mediaItems.length === 0 && !mediaLoading ? (
                   <p className="text-xs text-slate-500">画像がまだありません。</p>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    {mediaItems.map((item) => (
-                      <button
-                        key={item.path}
-                        type="button"
-                        onClick={() => setCoverUrl(item.url)}
-                        className="flex items-center gap-3 rounded border border-slate-200 bg-white p-2 text-left shadow-sm hover:border-sky-400"
-                      >
-                        <div className="h-16 w-24 overflow-hidden rounded bg-slate-100">
-                          <img src={item.url} alt={item.path} className="h-full w-full object-cover" />
-                        </div>
-                        <div className="text-[11px] text-slate-600 break-all">{item.path}</div>
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid gap-3 sm:grid-cols-2">
+                      {mediaPageItems.map((item) => (
+                        <button
+                          key={item.path}
+                          type="button"
+                          onClick={() => setCoverUrl(item.url)}
+                          className="flex items-center gap-3 rounded border border-slate-200 bg-white p-2 text-left shadow-sm hover:border-sky-400"
+                        >
+                          <div className="h-16 w-24 overflow-hidden rounded bg-slate-100">
+                            <img src={item.url} alt={item.path} className="h-full w-full object-cover" />
+                          </div>
+                          <div className="text-[11px] text-slate-600 break-all">{item.path}</div>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="flex items-center justify-between pt-2 text-xs text-slate-600">
+                      <span>
+                        {mediaItems.length} 件中 {(mediaPage - 1) * PAGE_SIZE + 1}–
+                        {Math.min(mediaPage * PAGE_SIZE, mediaItems.length)}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+                          disabled={mediaPage === 1}
+                          onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
+                        >
+                          前へ
+                        </button>
+                        <span>
+                          {mediaPage} / {mediaTotalPages}
+                        </span>
+                        <button
+                          type="button"
+                          className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+                          disabled={mediaPage === mediaTotalPages}
+                          onClick={() =>
+                            setMediaPage((p) => Math.min(mediaTotalPages, p + 1))
+                          }
+                        >
+                          次へ
+                        </button>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             )}

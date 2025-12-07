@@ -12,6 +12,7 @@ import Highlight from "@tiptap/extension-highlight";
 import katex from "katex";
 import { DOMSerializer, Node as ProseMirrorNode } from "@tiptap/pm/model";
 import { DOMParser } from "linkedom";
+import { TextSize } from "@/components/editor/TextSize";
 
 export type HeadingItem = {
   id: string;
@@ -43,6 +44,7 @@ const extensions: Extensions = [
   Highlight.configure({
     multicolor: false,
   }),
+  TextSize,
 ];
 
 type Props = {

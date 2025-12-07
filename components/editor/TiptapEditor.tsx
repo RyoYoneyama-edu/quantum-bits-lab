@@ -15,6 +15,7 @@ import TableRow from "@tiptap/extension-table-row";
 import HorizontalRule from "@tiptap/extension-horizontal-rule";
 import Highlight from "@tiptap/extension-highlight";
 import { supabase } from "@/lib/supabaseClient";
+import { TextSize } from "@/components/editor/TextSize";
 
 type MediaItem = {
   path: string;
@@ -71,6 +72,7 @@ export default function TiptapEditor({
       Highlight.configure({
         multicolor: false,
       }),
+      TextSize,
     ],
     content: content || "",
     onUpdate: ({ editor }) => {
@@ -231,6 +233,31 @@ export default function TiptapEditor({
               }`}
             >
               H4
+            </button>
+
+            <span className="my-1 h-px w-full bg-slate-200" />
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().unsetTextSize().run()}
+              className={`rounded px-2 py-1 ${
+                !editor.isActive("textSize")
+                  ? "bg-sky-100 text-sky-700"
+                  : "hover:bg-slate-100"
+              }`}
+            >
+              M
+            </button>
+
+            <button
+              type="button"
+              onClick={() => editor.chain().focus().setTextSmall().run()}
+              className={`rounded px-2 py-1 ${
+                editor.isActive("textSize", { size: "s" })
+                  ? "bg-sky-100 text-sky-700"
+                  : "hover:bg-slate-100"
+              }`}
+            >
+              S
             </button>
 
             <span className="my-1 h-px w-full bg-slate-200" />
