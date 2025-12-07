@@ -142,6 +142,7 @@ export default function NewPostPage() {
         paper_url: paperUrl || null,
         paper_title: paperTitle || null,
         author_id: authorId ?? null,
+        published_at: status === "published" ? new Date().toISOString() : null,
         content: bodyContent,
       },
     ]);

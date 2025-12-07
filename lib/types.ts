@@ -38,7 +38,7 @@ export type PostAdminSummary = Pick<
 
 export type PostEditorPayload = Pick<
   PostRecord,
-  "id" | "title" | "slug" | "category" | "status" | "content" | "tags"
+  "id" | "title" | "slug" | "category" | "status" | "content" | "tags" | "published_at"
 >;
 
 export type CategoryRecord = {

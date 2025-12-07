@@ -48,6 +48,8 @@ export default function EditPostPage() {
   const [paperTitle, setPaperTitle] = useState("");
   const [content, setContent] = useState<unknown>(null);
   const [authorId, setAuthorId] = useState<number | null>(null);
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [initialStatus, setInitialStatus] = useState<"draft" | "published">("draft");
 
   const [categories, setCategories] = useState<CategoryOption[]>([]);
   const [authors, setAuthors] = useState<AuthorOption[]>([]);
@@ -111,7 +113,7 @@ export default function EditPostPage() {
       const { data, error } = await supabase
         .from("posts")
         .select(
-          "id, title, slug, description, lead, category, status, content, tags, cover_url, language, paper_url, paper_title, author_id"
+          "id, title, slug, description, lead, category, status, content, tags, cover_url, language, paper_url, paper_title, author_id, published_at"
         )
         .eq("id", id)
         .maybeSingle();
@@ -131,7 +133,10 @@ export default function EditPostPage() {
         setDescription(post.description ?? "");
         setLead((post as any).lead ?? null);
         setCategory(post.category ?? "");
-        setStatus((post.status as "draft" | "published") ?? "draft");
+        const nextStatus = (post.status as "draft" | "published") ?? "draft";
+        setStatus(nextStatus);
+        setInitialStatus(nextStatus);
+        setPublishedAt(post.published_at ?? null);
         setContent(post.content ?? null);
         setTags(Array.isArray(post.tags) ? post.tags : []);
         setCoverUrl(post.cover_url ?? "");
@@ -178,6 +183,11 @@ export default function EditPostPage() {
         content: [],
       };
 
+    const nextPublishedAt =
+      status === "published" && (publishedAt === null || initialStatus !== "published")
+        ? new Date().toISOString()
+        : publishedAt;
+
     const { error } = await supabase
       .from("posts")
       .update({
@@ -194,6 +204,7 @@ export default function EditPostPage() {
         paper_title: paperTitle || null,
         author_id: authorId ?? null,
         content: bodyContent,
+        published_at: nextPublishedAt,
       })
       .eq("id", id);
 
@@ -204,6 +215,8 @@ export default function EditPostPage() {
       return;
     }
 
+    setPublishedAt(nextPublishedAt ?? null);
+    setInitialStatus(status);
     router.push("/admin/posts");
   }
 
