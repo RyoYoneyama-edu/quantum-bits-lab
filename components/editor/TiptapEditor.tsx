@@ -24,6 +24,7 @@ type MediaItem = {
 
 const BUCKET = "article-images";
 const ROOT_PREFIX = "media";
+const PAGE_SIZE = 6;
 
 export default function TiptapEditor({
   content,
@@ -37,6 +38,15 @@ export default function TiptapEditor({
   const [mediaLoading, setMediaLoading] = useState(false);
   const [mediaError, setMediaError] = useState<string | null>(null);
   const mediaLoaded = useMemo(() => mediaItems.length > 0, [mediaItems]);
+  const [mediaPage, setMediaPage] = useState(1);
+  const mediaTotalPages = useMemo(
+    () => Math.max(1, Math.ceil(mediaItems.length / PAGE_SIZE)),
+    [mediaItems.length]
+  );
+  const mediaPageItems = useMemo(() => {
+    const start = (mediaPage - 1) * PAGE_SIZE;
+    return mediaItems.slice(start, start + PAGE_SIZE);
+  }, [mediaItems, mediaPage]);
 
   const editor = useEditor({
     extensions: [
@@ -140,6 +150,7 @@ export default function TiptapEditor({
     try {
       const rows = await walkStorage(ROOT_PREFIX);
       setMediaItems(rows);
+      setMediaPage(1);
     } catch (err) {
       setMediaError(err instanceof Error ? err.message : "読み込みに失敗しました");
     } finally {
@@ -166,6 +177,7 @@ export default function TiptapEditor({
       } = supabase.storage.from(BUCKET).getPublicUrl(path);
       const next: MediaItem = { path, url: publicUrl };
       setMediaItems((prev) => [next, ...prev]);
+      setMediaPage(1);
       insertImageUrl(publicUrl);
       setPickerOpen(false);
     } catch (err) {
@@ -509,30 +521,61 @@ export default function TiptapEditor({
                 {mediaItems.length === 0 && !mediaLoading ? (
                   <p className="text-xs text-slate-500">画像がまだありません。</p>
                 ) : (
-                  <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
-                    {mediaItems.map((item) => (
-                      <button
-                        key={item.path}
-                        type="button"
-                        onClick={() => {
-                          insertImageUrl(item.url);
-                          setPickerOpen(false);
-                        }}
-                        className="group overflow-hidden rounded border border-slate-200 bg-white text-left shadow-sm hover:border-sky-400"
-                      >
-                        <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100">
-                          <img
-                            src={item.url}
-                            alt={item.path}
-                            className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                          />
-                        </div>
-                        <div className="break-all p-2 text-[11px] text-slate-600">
-                          {item.path}
-                        </div>
-                      </button>
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+                      {mediaPageItems.map((item) => (
+                        <button
+                          key={item.path}
+                          type="button"
+                          onClick={() => {
+                            insertImageUrl(item.url);
+                            setPickerOpen(false);
+                          }}
+                          className="group overflow-hidden rounded border border-slate-200 bg-white text-left shadow-sm hover:border-sky-400"
+                        >
+                          <div className="aspect-[4/3] w-full overflow-hidden bg-slate-100">
+                            <img
+                              src={item.url}
+                              alt={item.path}
+                              className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                            />
+                          </div>
+                          <div className="break-all p-2 text-[11px] text-slate-600">
+                            {item.path}
+                          </div>
+                        </button>
+                      ))}
+                    </div>
+                    <div className="mt-3 flex items-center justify-between text-xs text-slate-600">
+                      <span>
+                        {mediaItems.length} 件中 {(mediaPage - 1) * PAGE_SIZE + 1}–
+                        {Math.min(mediaPage * PAGE_SIZE, mediaItems.length)}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+                          disabled={mediaPage === 1}
+                          onClick={() => setMediaPage((p) => Math.max(1, p - 1))}
+                        >
+                          前へ
+                        </button>
+                        <span>
+                          {mediaPage} / {mediaTotalPages}
+                        </span>
+                        <button
+                          type="button"
+                          className="rounded border border-slate-300 px-2 py-1 disabled:opacity-40"
+                          disabled={mediaPage === mediaTotalPages}
+                          onClick={() =>
+                            setMediaPage((p) => Math.min(mediaTotalPages, p + 1))
+                          }
+                        >
+                          次へ
+                        </button>
+                      </div>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
