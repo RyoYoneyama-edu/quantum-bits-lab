@@ -103,10 +103,27 @@ export default function AdminCategoriesPage() {
       return;
     }
 
-    const { error } = await supabase.from("categories").delete().eq("id", id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    if (error) {
-      alert("削除に失敗しました: " + error.message);
+    if (!session?.access_token) {
+      alert("認証セッションが見つかりません。再ログインしてください。");
+      return;
+    }
+
+    const response = await fetch(`/api/admin/categories/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+      alert("削除に失敗しました: " + (payload?.error ?? "unknown error"));
       return;
     }
 

@@ -95,10 +95,30 @@ export default function MediaPage() {
     setErrorMsg(null);
     setStatusMsg("削除中...");
 
-    const { error } = await supabase.storage.from(BUCKET).remove([file.path]);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    if (error) {
-      setErrorMsg(describeError(error));
+    if (!session?.access_token) {
+      setErrorMsg("認証セッションが見つかりません。再ログインしてください。");
+      setStatusMsg(null);
+      return;
+    }
+
+    const response = await fetch("/api/admin/media/delete", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${session.access_token}`,
+      },
+      body: JSON.stringify({ path: file.path }),
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+      setErrorMsg(payload?.error ?? "削除に失敗しました。");
       setStatusMsg(null);
       return;
     }

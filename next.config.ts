@@ -4,12 +4,14 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       {
-        protocol: 'https',
-        // ↓ ご自身のSupabaseプロジェクトのURLに合わせて変更してください
-        // 例: 'xyzproject.supabase.co'
-        hostname: 'Quantum Bits Lab.supabase.co', 
-        port: '',
-        pathname: '/storage/v1/object/public/**',
+        protocol: "https",
+        hostname: "sqzwjhpnrzykharsmcne.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+        pathname: "/**",
       },
     ],
   },
