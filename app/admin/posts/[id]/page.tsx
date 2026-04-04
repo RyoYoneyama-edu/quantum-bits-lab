@@ -235,10 +235,27 @@ export default function EditPostPage() {
     if (!id) return;
     if (!confirm("この記事を削除しますか？")) return;
 
-    const { error } = await supabase.from("posts").delete().eq("id", id);
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
 
-    if (error) {
-      setErrorMsg(error.message);
+    if (!session?.access_token) {
+      setErrorMsg("認証セッションが見つかりません。再ログインしてください。");
+      return;
+    }
+
+    const response = await fetch(`/api/admin/posts/${id}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${session.access_token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const payload = (await response.json().catch(() => null)) as
+        | { error?: string }
+        | null;
+      setErrorMsg(payload?.error ?? "削除に失敗しました。");
       return;
     }
 
