@@ -6,16 +6,14 @@ import type { CategoryRecord, PostListItem } from "@/lib/types";
 import type { Metadata } from "next";
 
 const CATEGORY_FALLBACK_IMAGES: Record<string, string> = {
-  spintronics:
+  "lifestyle-energy":
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1000&q=80",
-  semiconductors:
+  "home-insulation":
     "https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1000&q=80",
-  "ai-hardware":
+  "digital-ai-energy":
     "https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1000&q=80",
-  quantum:
+  "future-energy-computing":
     "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?auto=format&fit=crop&w=1000&q=80",
-  "emerging-memory":
-    "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&w=1000&q=80",
 };
 
 const DEFAULT_FALLBACK_IMAGE =

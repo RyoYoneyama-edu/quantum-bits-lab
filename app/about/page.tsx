@@ -3,19 +3,19 @@ import PublicHeader from "@/components/home/PublicHeader";
 
 const HIGHLIGHTS = [
   {
-    title: "Lifestyle Energy",
+    title: "暮らしと電気代",
     body: "日常の暖房・冷房・家電など、身近な「電力の使われ方」を物理の視点からわかりやすく解説します。"
   },
   {
-    title: "Home & Insulation",
+    title: "住まいと断熱",
     body: "賃貸でも実践できる断熱・空調・日射対策を、熱の流れや建築物理に基づいて丁寧に説明します。"
   },
   {
-    title: "Digital & AI Energy",
+    title: "AI・データセンター電力",
     body: "スマホ・PCからデータセンター・生成AIまで、デジタル技術がどれくらい電力を使い、なぜそうなるのかを科学的に読み解きます。"
   },
   {
-    title: "Future Energy Computing",
+    title: "次世代省エネデバイス / 論文解説",
     body: "最新デバイス技術がどのようにエネルギー効率を変えるのかを深掘りします。"
   },
 ];

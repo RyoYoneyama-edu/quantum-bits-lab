@@ -4,6 +4,8 @@ import { supabase } from "@/lib/supabaseClient";
 import type { CategoryRecord, PostListItem } from "@/lib/types";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 const CATEGORY_FALLBACK_IMAGE: Record<string, string> = {
   "lifestyle-energy":
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1000&q=80",
