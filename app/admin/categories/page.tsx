@@ -1,7 +1,6 @@
 ﻿"use client";
 
 import { useEffect, useState } from "react";
-import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import type { CategoryRecord } from "@/lib/types";
 import AdminGuard from "@/components/admin/AdminGuard";
@@ -121,8 +120,16 @@ export default function AdminCategoriesPage() {
 
     if (!response.ok) {
       const payload = (await response.json().catch(() => null)) as
-        | { error?: string }
+        | { error?: string; linkedPosts?: number }
         | null;
+      if (response.status === 409) {
+        const countText =
+          typeof payload?.linkedPosts === "number"
+            ? `（紐づき記事: ${payload.linkedPosts}件）`
+            : "";
+        alert("削除できません: " + (payload?.error ?? "カテゴリに記事が紐づいています。") + countText);
+        return;
+      }
       alert("削除に失敗しました: " + (payload?.error ?? "unknown error"));
       return;
     }

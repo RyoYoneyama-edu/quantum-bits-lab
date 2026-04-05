@@ -2,7 +2,7 @@
 import PublicHeader from "@/components/home/PublicHeader";
 import { supabase } from "@/lib/supabaseClient";
 import type { Metadata } from "next";
-import type { PostListItem } from "@/lib/types";
+import type { CategoryRecord, PostListItem } from "@/lib/types";
 
 export const metadata: Metadata = {
   title: "検索",
@@ -37,6 +37,26 @@ async function fetchPosts(keyword: string) {
   }
 
   return (data ?? []) as PostListItem[];
+}
+
+async function fetchCategoryLabelMap() {
+  const { data, error } = await supabase
+    .from("categories")
+    .select("slug, label")
+    .order("order_index", { ascending: true });
+
+  if (error) {
+    console.error("Search categories fetch error:", error);
+    return {} as Record<string, string>;
+  }
+
+  const categories =
+    (data as Pick<CategoryRecord, "slug" | "label">[] | null) ?? [];
+
+  return categories.reduce<Record<string, string>>((acc, item) => {
+    acc[item.slug] = item.label;
+    return acc;
+  }, {});
 }
 
 function decodeEscapedText(value?: string | null) {
@@ -97,6 +117,7 @@ export default async function SearchPage({
   const keyword =
     typeof resolvedParams.q === "string" ? resolvedParams.q.trim() : "";
   const posts = await fetchPosts(keyword);
+  const categoryLabelMap = await fetchCategoryLabelMap();
   const hasKeyword = keyword.length > 0;
 
   return (
@@ -158,7 +179,7 @@ export default async function SearchPage({
                   <div className="flex flex-1 flex-col gap-3 p-5">
                     <div className="flex items-center justify-between text-xs text-slate-500">
                       <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
-                        {post.category}
+                        {categoryLabelMap[post.category] ?? post.category}
                       </span>
                       {post.published_at && (
                         <span>{formatDate(post.published_at)}</span>
