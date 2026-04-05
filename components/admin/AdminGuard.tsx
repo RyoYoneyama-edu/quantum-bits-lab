@@ -14,32 +14,55 @@ export default function AdminGuard({ children }: { children: ReactNode }) {
   useEffect(() => {
     let mounted = true;
 
-    async function verifySession() {
-      const { data } = await supabase.auth.getSession();
+    async function verifyToken(accessToken: string) {
+      const response = await fetch("/api/admin/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+        cache: "no-store",
+      });
+
       if (!mounted) return;
-      if (data.session) {
+
+      if (response.ok) {
         setState("ready");
       } else {
+        await supabase.auth.signOut();
         setState("redirecting");
         const redirect = encodeURIComponent(pathname ?? "/admin/posts");
         router.replace(`/admin/login?redirect=${redirect}`);
       }
     }
 
-    verifySession();
+    async function verifyAdmin() {
+      const { data, error } = await supabase.auth.getSession();
+      if (!mounted) return;
 
-    const { data: listener } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
+      const session = data.session;
+      if (error || !session?.access_token) {
+        setState("redirecting");
+        const redirect = encodeURIComponent(pathname ?? "/admin/posts");
+        router.replace(`/admin/login?redirect=${redirect}`);
+        return;
+      }
+
+      await verifyToken(session.access_token);
+    }
+
+    verifyAdmin();
+
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
         if (!mounted) return;
-        if (session) {
-          setState("ready");
-        } else {
+        if (!session?.access_token) {
           setState("redirecting");
           const redirect = encodeURIComponent(pathname ?? "/admin/posts");
           router.replace(`/admin/login?redirect=${redirect}`);
+          return;
         }
-      }
-    );
+
+        void verifyToken(session.access_token);
+      });
 
     return () => {
       mounted = false;
